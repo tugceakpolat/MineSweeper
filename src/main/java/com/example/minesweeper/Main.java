@@ -12,29 +12,33 @@ import java.util.Scanner;
     Scanner input = new Scanner(System.in);
     Random random = new Random();
 
-    public void createBoard () {
+    void createBoard () {
         bombCount = (rows * column) / 4;
         board = new Cell[rows][column];
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
-                board = new Cell[i][j];
+                board[i][j] = new Cell();
             }
         }
 
         while (bombCount > 0) {
-            int i = random.nextInt(0, rows);
-            int j = random.nextInt(0, column);
+            int i = random.nextInt(0, rows-1);
+            int j = random.nextInt(0, column-1);
+
 
             if (!board[i][j].isHasBomb()) {
                 board[i][j].setHasBomb(true);
+
                 bombCount--;
 
             }
         }
+        printMap();
+        playGame();
     }
 
-    public boolean checkWin(){
+    boolean checkWin(){
         int unOpenedCells = 0;
         int bombNumber = 0;
 
@@ -52,7 +56,7 @@ import java.util.Scanner;
         return unOpenedCells == bombNumber;
     }
 
-    public void userInput(){
+    void userInput(){
 
         System.out.println("Welcome to the mine sweeper!");
 
@@ -63,21 +67,23 @@ import java.util.Scanner;
         column = input.nextInt();
         createBoard();
     }
-    public void playGame(){
+    void playGame(){
         boolean finish = false;
 
         while (!finish){
             System.out.print("Please enter a rows :");
-            int newRows = input.nextInt();
+            int newRows = input.nextInt() - 1;
 
             System.out.print("Please enter a column : ");
-            int newColumn = input.nextInt();
+            int newColumn = input.nextInt() - 1;
+            printMap();
 
             int bombCountOfCell = 0;
             if((newRows > rows || newColumn > column) && (newRows < 0 || newColumn < 0) ){
                 System.out.println("Row or column choice is out of bounds. Try again.");
             } else if (board[newRows][newColumn].hasBomb) {
                 System.out.println("Bomb exploded! You lose!");
+                printMineMap();
                 finish = true;
             } else if (board[newRows][newColumn].getContent() != "-") {
                 System.out.println("This sell is already selected. Try another cell.");
@@ -94,38 +100,39 @@ import java.util.Scanner;
 
                 if (checkWin()){
                     System.out.println("You win!");
+                    printMineMap();
                     finish = true;
                 }
             }
         }
     }
 
-    public void printMap(){
-        System.out.println("1");
+    void printMap(){
+        System.out.println();
         for(int i = 0; i<board.length; i++){
             for(int j = 0; j<board.length; j++){
-                System.out.println(board[i][j].getContent() + " ");
+                System.out.print(board[i][j].getContent() + " ");
             }
             System.out.println();
         }
-        System.out.println("2");
+        System.out.println();
 
 
     }
 
-    public void printMineMap(){
+    void printMineMap(){
         System.out.println(" ");
         for (int i = 0; i<board.length; i++){
             for(int j = 0; j< board.length; j++){
                 if(board[i][j].hasBomb){
-                    System.out.println("* ");
+                    System.out.print("* ");
                 }
                 else {
-                    System.out.println("- ");
+                    System.out.print("- ");
                 }
                 System.out.println();
             }
-            System.out.println("2");
+            System.out.println();
         }
 
     }
